@@ -6,10 +6,10 @@ from audiomentations import Compose, AddGaussianNoise, PitchShift, HighPassFilte
 from helper import  _plot_signal_and_augmented_signal
 
 augment_raw_audio = Compose([
-    #AddGaussianNoise(min_amplitude=0.01, max_amplitude=0.05, p=1),
+    AddGaussianNoise(min_amplitude=0.01, max_amplitude=0.05, p=1),
     PitchShift(min_semitones=-8, max_semitones=10, p=1),
-    #HighPassFilter(min_cutoff_freq=2000, max_cutoff_freq=4000, p=1),
-    #TimeStretch(min_rate=0.1, max_rate=0.5, p=1)
+    HighPassFilter(min_cutoff_freq=2000, max_cutoff_freq=4000, p=1),
+    TimeStretch(min_rate=0.1, max_rate=0.5, p=1)
 ])
 
 if __name__ == "__main__":
