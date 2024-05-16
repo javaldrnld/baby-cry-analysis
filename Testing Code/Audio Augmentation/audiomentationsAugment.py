@@ -1,19 +1,45 @@
+import os
 import librosa
 import soundfile as sf
 from audiomentations import Compose, AddGaussianNoise, PitchShift, HighPassFilter, TimeStretch
 # Compose -> Augmentation Chain
 
-from helper import  _plot_signal_and_augmented_signal
+from helper import _plot_signal_and_augmented_signal
 
 augment_raw_audio = Compose([
-    AddGaussianNoise(min_amplitude=0.01, max_amplitude=0.05, p=1),
+    AddGaussianNoise(min_amplitude=0.01, max_amplitude=0.05, p=0.5),
     PitchShift(min_semitones=-8, max_semitones=10, p=1),
     HighPassFilter(min_cutoff_freq=2000, max_cutoff_freq=4000, p=1),
     TimeStretch(min_rate=0.1, max_rate=0.5, p=1)
 ])
 
+
+def augment_audio_files(input_dir, output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    for root, dirs, files in os.walk(input_dir):
+        for file in files:
+            if file.endswith(".wav"):
+                file_path = os.path.join(root, file)
+                signal, sr = librosa.load(file_path)
+                augmented_signal = augment_raw_audio(signal, sr)
+
+                # Create output directory structure
+                relative_path = os.path.relpath(root, input_dir)
+                output_folder = os.path.join(output_dir, relative_path)
+                if not os.path.exists(output_folder):
+                    os.makedirs(output_folder)
+
+                # Prepend 'audio_augmented' to the file name
+                augmented_filename = f"audio_augmented_{file}"
+                output_file_path = os.path.join(output_folder, augmented_filename)
+
+                sf.write(output_file_path, augmented_signal, sr)
+                print(f"Augmented {file_path} and save to {output_file_path}")
+
+
 if __name__ == "__main__":
-    signal, sr = librosa.load("06c4cfa2-7fa6-4fda-91a1-ea186a4acc64-1430029237378-1.7-f-26-ti.wav")
-    augmented_signal = augment_raw_audio(signal, sr)
-    sf.write("augmented_raw_audio.wav", augmented_signal, sr)
-    _plot_signal_and_augmented_signal(signal, augmented_signal, sr)
+    input_directory = "/home/kotaro/Documents/baby-cry-analysis/data/raw"
+    output_directory = "/home/kotaro/Documents/baby-cry-analysis/data/raw/Augmented_Audio"
+    augment_audio_files(input_directory, output_directory)
