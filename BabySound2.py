@@ -39,13 +39,18 @@ def record_audio(filename, duration=5, threshold=5000):
     sound_file.writeframes(b"".join(frames))
     sound_file.close()
 
-if __name__ == "__main__":
-    filenumber = 0
-    while True:
-        if filenumber == 5: 
-            filenumber = 0
-        else:
-            filenumber += 1
+
+def saveaudio():
+    if __name__ == "__main__":
+        filenumber = 0
+        while True:
+            if filenumber == 5: 
+             filenumber = 0
+            else:
+                filenumber += 1
         
-        filename = f"recording_{filenumber}.wav"
-        record_audio(filename)
+            filename = f"recording_{filenumber}.wav"
+            record_audio(filename)
+
+
+saveaudio()
