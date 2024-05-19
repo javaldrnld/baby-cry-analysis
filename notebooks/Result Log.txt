@@ -1,0 +1,44 @@
+## Classification Report for Clean Audio:
+
+### Random Forest no Fine Tuning
+Label: belly_pain, Total Count: 16, Correctly Predicted: 16
+Label: burping, Total Count: 8, Correctly Predicted: 7
+Label: discomfort, Total Count: 27, Correctly Predicted: 22
+Label: hungry, Total Count: 92, Correctly Predicted: 90
+Label: tired, Total Count: 24, Correctly Predicted: 23
+
+### SVM no Fine Tuning
+Label: belly_pain, Total Count: 16, Correctly Predicted: 16
+Label: burping, Total Count: 8, Correctly Predicted: 7
+Label: discomfort, Total Count: 27, Correctly Predicted: 22
+Label: hungry, Total Count: 92, Correctly Predicted: 92
+Label: tired, Total Count: 24, Correctly Predicted: 23
+
+## Classification Report for Augmented Audio:
+### SVM No Fine Tuning:
+Label: belly_pain, Total Count: 16, Correctly Predicted: 16
+Label: burping, Total Count: 8, Correctly Predicted: 7
+Label: discomfort, Total Count: 27, Correctly Predicted: 23
+Label: hungry, Total Count: 92, Correctly Predicted: 85
+Label: tired, Total Count: 24, Correctly Predicted: 20
+
+### SVM Fine Tuning
+Label: belly_pain, Total Count: 16, Correctly Predicted: 16
+Label: burping, Total Count: 8, Correctly Predicted: 5
+Label: discomfort, Total Count: 27, Correctly Predicted: 27
+Label: hungry, Total Count: 92, Correctly Predicted: 68
+Label: tired, Total Count: 24, Correctly Predicted: 20
+
+### RF No Fine Tuning
+Label: belly_pain, Total Count: 16, Correctly Predicted: 15
+Label: burping, Total Count: 8, Correctly Predicted: 7
+Label: discomfort, Total Count: 27, Correctly Predicted: 23
+Label: hungry, Total Count: 92, Correctly Predicted: 91
+Label: tired, Total Count: 24, Correctly Predicted: 20
+
+### RF Fine Tuning
+Label: belly_pain, Total Count: 16, Correctly Predicted: 13
+Label: burping, Total Count: 8, Correctly Predicted: 3
+Label: discomfort, Total Count: 27, Correctly Predicted: 26
+Label: hungry, Total Count: 92, Correctly Predicted: 3
+Label: tired, Total Count: 24, Correctly Predicted: 8
