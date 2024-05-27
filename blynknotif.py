@@ -36,7 +36,7 @@ def handle_prediction(prediction):
         blynk.log_event("burping","The baby needs burping")
     elif prediction == "belly pain":
         print("The baby has belly pain")
-        blynk.log_event("belly pain","The baby has belly pain")
+        blynk.log_event("belly_pain","The baby has belly pain")
         
 
 if __name__ == "__main__":
