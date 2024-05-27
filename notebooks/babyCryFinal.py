@@ -243,7 +243,7 @@ for name, model in models.items():
     print(classification_report(y_test, y_pred, zero_division=0))
 
 
-# In[35]:
+# In[15]:
 
 
 from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold, KFold, cross_val_score
@@ -316,19 +316,19 @@ def save_pickle(obj, filename):
         pickle.dump(obj, f)
 
 
-# In[17]:
+# In[14]:
 
 
 # IGNORE
 best_model = models['SVM']
-save_pickle(best_model, 'models/donateacry/svm_model.pkl')
-save_pickle(scaler, 'models/donateacry/scaler_svm.pkl')
-save_pickle(label_encoder, 'models/donateacry/label_encoder_svm.pkl')
+save_pickle(best_model, 'models/audio_augmented_model/svm_model.pkl')
+save_pickle(scaler, 'models/audio_augmented_model/scaler_svm.pkl')
+save_pickle(label_encoder, 'models/audio_augmented_model/label_encoder_svm.pkl')
 
 best_model = models['Random Forest']
-save_pickle(best_model, 'models/donateacry/rf_model.pkl')
-save_pickle(scaler, 'models/donateacry/scaler_rf.pkl')
-save_pickle(label_encoder, 'models/donateacry/label_encoder_rf.pkl')
+save_pickle(best_model, 'models/audio_augmented_model/rf_model.pkl')
+save_pickle(scaler, 'models/audio_augmented_model/scaler_rf.pkl')
+save_pickle(label_encoder, 'models/audio_augmented_model/label_encoder_rf.pkl')
 
 
 # In[13]:
@@ -351,84 +351,6 @@ scaler = load_pickle('models/audio_augmented_model/scaler_rf.pkl')
 label_encoder = load_pickle('models/audio_augmented_model/label_encoder_svm.pkl')
 
 
-# In[ ]:
-
-
-# IGNORE
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
-from sklearn.pipeline import Pipeline
-from sklearn.feature_selection import SelectKBest, chi2
-
-from imblearn.over_sampling import SMOTE
-
-# Load combined dataset
-df_combined = pd.read_csv('audio_augment_combined_audio_dataset.csv')
-
-# Preprocess data
-label_encoder = LabelEncoder()
-df_combined['label'] = label_encoder.fit_transform(df_combined['label'])
-X = df_combined.drop('label', axis=1).values
-y = df_combined['label'].values
-
-# Split data into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-
-# Handle class imbalance
-smote = SMOTE(random_state=42)
-X_train, y_train = smote.fit_resample(X_train, y_train)
-
-# Standardize Features
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-# Hyperparameter tuning for SVM
-svm_pipeline = Pipeline([
-    ('scaler', StandardScaler()),
-    ('svm', SVC(random_state=42))
-])
-
-param_grid_svm = {
-    'svm__C': [0.1, 1, 10, 100],
-    'svm__gamma': [1, 0.1, 0.01, 0.001],
-    'svm__kernel': ['rbf', 'linear']
-}
-
-grid_svm = GridSearchCV(svm_pipeline, param_grid_svm, refit=True, cv=StratifiedKFold(5), verbose=2)
-grid_svm.fit(X_train, y_train)
-
-# Evaluate SVM
-svm_best = grid_svm.best_estimator_
-y_pred_svm = svm_best.predict(X_test)
-print("SVM Classification Report")
-print(classification_report(y_test, y_pred_svm))
-
-
-# Define the pipeline
-rf_pipeline = Pipeline([
-    ('scaler', StandardScaler()),
-    ('rf', RandomForestClassifier(random_state=42))
-])
-
-# Define the parameter grid
-param_grid_rf = {
-    'rf__n_estimators': [100, 200, 500],
-    'rf__max_features': ['sqrt', 'log2'],  # Removed 'auto'
-    'rf__max_depth': [4, 6, 8, 10, 12],
-    'rf__min_samples_split': [2, 5, 10],
-    'rf__min_samples_leaf': [1, 2, 4]
-}
-
-# Perform GridSearchCV
-grid_rf = GridSearchCV(rf_pipeline, param_grid_rf, refit=True, cv=StratifiedKFold(5), verbose=2)
-grid_rf.fit(X_train, y_train)
-# Evaluate Random Forest
-rf_best = grid_rf.best_estimator_
-y_pred_rf = rf_best.predict(X_test)
-print("Random Forest Classification Report")
-print(classification_report(y_test, y_pred_rf))
-
-
 # In[20]:
 
 
@@ -447,103 +369,10 @@ with open('models/donateacry/best_clean_rf_model.pkl', 'wb') as f:
 
 # ## Good Testing Clean SVM and RF Model
 
-# In[21]:
+# In[17]:
 
 
-## SVM Model
-
-import os
-import librosa
-import numpy as np
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pickle
-from collections import Counter
-
-# Predict on new audio snippets and collect true and predicted labels
-folder_path = '../data/donateacry_corpus/'
-y_true = []
-y_pred = []
-results = []
-
-
-# Function to load a model or other objects from a file
-def load_pickle(filename):
-    with open(filename, 'rb') as f:
-        return pickle.load(f)
-
-# Load the trained model, scaler, and label encoder
-trained_model = load_pickle('models/audio_augmented_model/svm_model.pkl')
-scaler = load_pickle('models/donateacry/scaler_svm.pkl')
-label_encoder = load_pickle('models/donateacry/label_encoder_svm.pkl')
-
-# Define the class labels
-class_labels = label_encoder.classes_
-
-for folder_name in os.listdir(folder_path):
-    folder_dir = os.path.join(folder_path, folder_name)
-    for filename in os.listdir(folder_dir):
-        if filename.endswith(".wav"):
-            audiofile, sr = librosa.load(os.path.join(folder_dir, filename), sr=None)
-            mfcc_features = mfcc(audiofile, sr)
-            mfcc_features_flat = mfcc_features.flatten()
-            mfcc_features_flat = scaler.transform([mfcc_features_flat])
-            prediction = trained_model.predict(mfcc_features_flat)
-            predicted_label = label_encoder.inverse_transform(prediction)[0]
-            y_true.append(folder_name)
-            y_pred.append(predicted_label)
-            results.append(f"Original: {folder_name} Predicted: {predicted_label}")
-            
-label_counts = Counter(y_true)
-
-# Compute the confusion matrix
-cm = confusion_matrix(y_true, y_pred, labels=class_labels)
-
-# Normalize the confusion matrix to show percentages
-cm_percentage = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-
-# Plot the confusion matrix
-plt.figure(figsize=(10, 8))
-sns.heatmap(cm_percentage, annot=True, fmt='.2%', cmap='Blues', xticklabels=class_labels, yticklabels=class_labels)
-plt.title('Confusion Matrix (Percentage) SVM Model No Fine Tuning + Audio Augmented')
-plt.xlabel('Predicted Label')
-plt.ylabel('True Label')
-plt.savefig('RF Model No Fine Tuning + Audio Augmented.png', dpi=300, bbox_inches='tight')
-plt.show()
-
-# Extract the correct predictions (diagonal elements)
-correct_predictions = np.diag(cm)
-
-# Display the number of items and correctly predicted items per label
-for i, label in enumerate(class_labels):
-    print(f"Label: {label}, Total Count: {label_counts[label]}, Correctly Predicted: {correct_predictions[i]}")
-
-# Generate and display the classification report
-print("\nClassification Report:")
-print(classification_report(y_true, y_pred, target_names=class_labels))
-
-
-# Test function for a single audio file
-def test_single_audio(audio_path):
-    audiofile, sr = librosa.load(audio_path, sr=None)
-    mfcc_features = mfcc(audiofile, sr)
-    mfcc_features_flat = mfcc_features.flatten()
-    mfcc_features_flat = scaler.transform([mfcc_features_flat])
-    prediction = trained_model.predict(mfcc_features_flat)
-    predicted_label = label_encoder.inverse_transform(prediction)[0]
-    print(f"Predicted label for {os.path.basename(audio_path)}: {predicted_label}")
-
-# Test a single audio file
-single_audio_path = '../data/indiv_test/435806317_25534324009486266_6473560724221715299_n.wav'
-test_single_audio(single_audio_path)
-
-
-# In[18]:
-
-
-## SVM Model
+## RF
 
 import os
 import librosa
@@ -634,4 +463,10 @@ def test_single_audio(audio_path):
 # Test a single audio file
 single_audio_path = '../data/indiv_test/435806317_25534324009486266_6473560724221715299_n.wav'
 test_single_audio(single_audio_path)
+
+
+# In[1]:
+
+
+
 
