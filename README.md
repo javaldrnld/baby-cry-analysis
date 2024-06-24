@@ -31,5 +31,6 @@ We are using Support Vector Machines (SVM) and Random Forest algorithms for the 
 Our project has benefited from open-source codes and libraries. We would like to acknowledge the following:
 
 1. Github Repository:
-2. Title of the File:
+
+Machine Learning Systems - KWS Feature Engineering. (n.d.). https://harvard-edge.github.io/cs249r_book/contents/labs/shared/kws_feature_eng/kws_feature_eng.html
 
