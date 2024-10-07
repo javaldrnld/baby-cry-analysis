@@ -101,3 +101,7 @@ dmypy.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+data/
+saved_models/
+notebooks/models/
