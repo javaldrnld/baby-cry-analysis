@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "80766759718",
+    "firebase_url": "https://baby-9e20f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "baby-9e20f",
+    "storage_bucket": "baby-9e20f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80766759718:android:7b860a8093290fc9e8c7e7",
+        "android_client_info": {
+          "package_name": "com.example.baby2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2wMOWvrEm3QoiPpmAWLDkOHI_7xje2Uw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80766759718:android:8d24e45a2db5111de8c7e7",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2wMOWvrEm3QoiPpmAWLDkOHI_7xje2Uw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
