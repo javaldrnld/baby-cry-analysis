@@ -1,0 +1,12 @@
+librosa
+tensorflow
+pyaudio
+firebase-admin
+google-cloud-speech
+numpy
+scikit-learn
+matplotlib
+seaborn
+imblearn
+python-dotenv
+
