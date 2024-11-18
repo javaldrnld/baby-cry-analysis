@@ -10,7 +10,13 @@ load_dotenv()
 
 # Firebase initialization
 cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
-db_url = "https://baby-9e20f-default-rtdb.asia-southeast1.firebasedatabase.app/"
+db_url = os.getenv("FIREBASE_DB_URL")
+
+if not cred_path or not os.path.exists(cred_path):
+    raise FileNotFoundError(f"Firebase credentials not found at: {cred_path}")
+
+if not db_url:
+    raise ValueError("FIREBASE_DB_URL is not set in the .env file.")
 
 print(f"Credential Path: {cred_path}")
 print(f"Database URL: {db_url}")
@@ -36,16 +42,16 @@ def upload_result(result, predicted_reason=None):
         "Time": [current_time],
         "Predictions": predicted_reason if predicted_reason else "unknown",
     }
-    print(f"Attempting to update with: {updates}")
     ref.update(updates)
     print("Update successful")
 
-    # Update cryingReasons
+    # Update crying reasons and count
     if result == "Baby is crying" and predicted_reason:
-        crying_reasons = ref.child("cryingReasons").get() or []
-        crying_reasons.append(predicted_reason)
-        updates["cryingReasons"] = crying_reasons[-5:]  # Keep only the last 5 reason
+        # Increment count for this cry type in Firebase
+        cry_count_ref = ref.child("cryingReasonsCount")
+        current_counts = cry_count_ref.get() or {}
+        new_count = current_counts.get(predicted_reason, 0) + 1
 
-    print(f"Attempting to update with: {updates}")
-    ref.update(updates)
-    print("Update successful")
+        # Update the counts in Firebase
+        cry_count_ref.update({predicted_reason: new_count})
+        print(f"Updated Firebase count for '{predicted_reason}': {new_count}")
