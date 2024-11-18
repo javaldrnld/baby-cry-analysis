@@ -10,3 +10,4 @@ seaborn
 imblearn
 python-dotenv
 sounddevice
+vosk
